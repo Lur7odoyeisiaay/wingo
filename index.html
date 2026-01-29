@@ -139,10 +139,10 @@ appId: "1:1088530072061:web:57d8abbc2439a5eb35d994"
       const userCred = await signInWithEmailAndPassword(auth, email, password);
 
       if (!userCred.user.emailVerified) {
-        alert("Please verify your email before login.");
-        return;
+  alert("Please verify your email before login.");
+  return;
       }
-
+    
       alert("Login successful!");
     } catch (e) {
       alert(e.message);
