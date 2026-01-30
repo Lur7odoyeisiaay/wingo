@@ -1,213 +1,74 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-<meta charset="UTF-8">
-<title>Wingo 2.0 – Login</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-
-<style>
-body{
-  font-family: Arial;
-  background:#f4f4ff;
-  padding:20px;
-}
-.box{
-  max-width:400px;
-  margin:auto;
-  background:#fff;
-  padding:20px;
-  border-radius:10px;
-}
-input{
-  width:100%;
-  padding:10px;
-  margin:8px 0;
-}
-button{
-  width:100%;
-  padding:10px;
-  background:#6c63ff;
-  color:#fff;
-  border:none;
-  margin-top:10px;
-  cursor:pointer;
-}
-.link{
-  background:none;
-  color:#6c63ff;
-}
-.eye{
-  position:absolute;
-  right:30px;
-  margin-top:-35px;
-  cursor:pointer;
-}
-hr{margin:20px 0;}
-</style>
+  <title>Wingo 2.0 Login</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
-
 <body>
 
-<div class="box">
-<h2>Wingo 2.0</h2>
+<h2>Wingo 2.0 – Login / Register</h2>
 
-<!-- EMAIL -->
-<input id="email" type="email" placeholder="Email">
+<input id="email" type="email" placeholder="Email"><br><br>
 
-<!-- PASSWORD -->
-<div style="position:relative">
-  <input id="password" type="password" placeholder="Password">
-  <span class="eye" onclick="togglePass()">👁️</span>
-</div>
+<input id="password" type="password" placeholder="Password">
+<button onclick="toggle()">👁</button><br><br>
 
 <button onclick="register()">Register</button>
 <button onclick="login()">Login</button>
+<br><br>
 
-<button class="link" onclick="forgotPassword()">Forgot Password?</button>
+<button onclick="googleLogin()">Login with Google</button>
 
-<hr>
-
-<!-- PHONE -->
-<input id="phone" type="text" placeholder="+91XXXXXXXXXX">
-<div id="recaptcha-container"></div>
-<button onclick="sendOTP()">Send OTP</button>
-
-<input id="otp" placeholder="Enter OTP">
-<button onclick="verifyOTP()">Verify OTP</button>
-
-<hr>
-
-<button onclick="googleLogin()">Continue with Google</button>
-
-</div>
-
-<!-- FIREBASE -->
 <script type="module">
-
-import { initializeApp } from
-"https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
-
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
 import {
-getAuth,
-createUserWithEmailAndPassword,
-signInWithEmailAndPassword,
-sendEmailVerification,
-sendPasswordResetEmail,
-GoogleAuthProvider,
-signInWithPopup,
-RecaptchaVerifier,
-signInWithPhoneNumber
-} from
-"https://www.gstatic.com/firebasejs/12.8.0/firebase-auth.js";
+  getAuth,
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  sendEmailVerification,
+  GoogleAuthProvider,
+  signInWithPopup
+} from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
 
-import {
-getFirestore,
-doc,
-setDoc
-} from
-"https://www.gstatic.com/firebasejs/12.8.0/firebase-firestore.js";
-
-/* 🔥 YOUR FIREBASE CONFIG */
 const firebaseConfig = {
-  apiKey: "AIzaSyDa8ilGRerUgfN6nvoikHJeBGvK9v0bg7Y",
+  apiKey: "YOUR_API_KEY",
   authDomain: "wingo-2o.firebaseapp.com",
   projectId: "wingo-2o",
-  storageBucket: "wingo-2o.firebasestorage.app",
-  messagingSenderId: "883614286753",
-  appId: "1:883614286753:web:20407fa46e2f01b449c1e0"
 };
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
-const db = getFirestore(app);
 
-/* PASSWORD SHOW/HIDE */
-window.togglePass = () => {
+window.toggle = () => {
   const p = document.getElementById("password");
   p.type = p.type === "password" ? "text" : "password";
 };
 
-/* REGISTER */
 window.register = async () => {
   const email = email.value;
-  const password = document.getElementById("password").value;
-
-  try{
-    const res = await createUserWithEmailAndPassword(auth,email,password);
-    await sendEmailVerification(res.user);
-
-    await setDoc(doc(db,"users",res.user.uid),{
-      email,
-      coins:0,
-      created:new Date()
-    });
-
-    alert("Registered! Verify email first.");
-  }catch(e){alert(e.message);}
+  const pass = password.value;
+  const user = await createUserWithEmailAndPassword(auth, email, pass);
+  await sendEmailVerification(user.user);
+  alert("Email verify karo, mail bhej di hai");
 };
 
-/* LOGIN */
 window.login = async () => {
-  try{
-    const res = await signInWithEmailAndPassword(
-      auth,
-      email.value,
-      password.value
-    );
-    if(!res.user.emailVerified){
-      alert("Verify email first");
-      return;
-    }
-    alert("Login successful");
-    // location.href="dashboard.html";
-  }catch(e){alert(e.message);}
+  const email = email.value;
+  const pass = password.value;
+  const user = await signInWithEmailAndPassword(auth, email, pass);
+  if (!user.user.emailVerified) {
+    alert("Pehle email verify karo");
+    return;
+  }
+  alert("Login success");
 };
 
-/* FORGOT PASSWORD */
-window.forgotPassword = async () => {
-  if(!email.value){alert("Enter email");return;}
-  await sendPasswordResetEmail(auth,email.value);
-  alert("Reset email sent");
-};
-
-/* GOOGLE LOGIN */
 window.googleLogin = async () => {
   const provider = new GoogleAuthProvider();
-  const res = await signInWithPopup(auth,provider);
-  await setDoc(doc(db,"users",res.user.uid),{
-    email:res.user.email,
-    coins:0
-  },{merge:true});
-  alert("Google Login Success");
+  await signInWithPopup(auth, provider);
+  alert("Google login success");
 };
-
-/* PHONE OTP */
-window.recaptchaVerifier = new RecaptchaVerifier(
-  auth,
-  "recaptcha-container",
-  {size:"invisible"}
-);
-
-let confirmationResult;
-
-window.sendOTP = async () => {
-  confirmationResult = await signInWithPhoneNumber(
-    auth,
-    phone.value,
-    window.recaptchaVerifier
-  );
-  alert("OTP Sent");
-};
-
-window.verifyOTP = async () => {
-  const res = await confirmationResult.confirm(otp.value);
-  await setDoc(doc(db,"users",res.user.uid),{
-    phone:phone.value,
-    coins:0
-  },{merge:true});
-  alert("Phone login success");
-};
-
 </script>
+
 </body>
 </html>
