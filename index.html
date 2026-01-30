@@ -1,89 +1,216 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <title>Wingo 2.0 Login</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
+<style>
+body{
+  margin:0;
+  height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  background:#f4efe9;
+  font-family:Arial;
+}
+.box{
+  background:#fff;
+  width:100%;
+  max-width:360px;
+  padding:20px;
+  border-radius:10px;
+  text-align:center;
+  box-shadow:0 10px 25px rgba(0,0,0,.1);
+}
+input{
+  width:100%;
+  padding:10px;
+  margin:8px 0;
+}
+button{
+  width:100%;
+  padding:10px;
+  margin-top:8px;
+  cursor:pointer;
+}
+.google{
+  background:#4285f4;
+  color:#fff;
+  border:none;
+}
+.link{
+  color:#007bff;
+  cursor:pointer;
+  font-size:14px;
+}
+.password-box{
+  position:relative;
+}
+.password-box span{
+  position:absolute;
+  right:10px;
+  top:12px;
+  cursor:pointer;
+}
+.hide{display:none}
+</style>
+</head>
+
+<body>
+
+<div class="box">
+  <h2>Wingo 2.0</h2>
+
+  <input id="email" placeholder="Email">
+
+  <div class="password-box">
+    <input id="password" type="password" placeholder="Password">
+    <span onclick="togglePass()">👁</span>
+  </div>
+
+  <button onclick="registerUser()">Register</button>
+  <button onclick="loginUser()">Login</button>
+
+  <button class="google" onclick="googleLogin()">Continue with Google</button>
+
+  <p class="link" onclick="forgotPassword()">Forgot Password?</p>
+
+  <!-- OTP SECTION -->
+  <div id="otpBox" class="hide">
+    <input id="otpInput" placeholder="Enter OTP">
+    <button onclick="verifyOTP()">Verify OTP</button>
+  </div>
+</div>
+
 <script type="module">
-  // Firebase core
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
+/* ---------- FIREBASE IMPORTS ---------- */
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
+import {
+  getAuth,
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  sendEmailVerification,
+  sendPasswordResetEmail,
+  GoogleAuthProvider,
+  signInWithPopup
+} from "https://www.gstatic.com/firebasejs/12.8.0/firebase-auth.js";
 
-  // Firebase Auth
-  import {
-    getAuth,
-    createUserWithEmailAndPassword,
-    signInWithEmailAndPassword,
-    sendEmailVerification,
-    GoogleAuthProvider,
-    signInWithPopup
-  } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-auth.js";
+import {
+  getFirestore,
+  doc,
+  setDoc,
+  getDoc,
+  updateDoc
+} from "https://www.gstatic.com/firebasejs/12.8.0/firebase-firestore.js";
 
-  // Firebase config
-  const firebaseConfig = {
-    apiKey: "AIzaSyDa8ilGRerUgfN6nvoikHJeBGvK9v0bg7Y",
-    authDomain: "wingo-2o.firebaseapp.com",
-    projectId: "wingo-2o",
-    storageBucket: "wingo-2o.appspot.com",
-    messagingSenderId: "883614286753",
-    appId: "1:883614286753:web:20407fa46e2f01b449c1e0"
-  };
+/* ---------- CONFIG (APNA HI REHNE DO) ---------- */
+const firebaseConfig = {
+  apiKey: "PASTE_YOUR_API_KEY",
+  authDomain: "YOUR_PROJECT.firebaseapp.com",
+  projectId: "YOUR_PROJECT"
+};
 
-  // Init
-  const app = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
-  const googleProvider = new GoogleAuthProvider();
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+const googleProvider = new GoogleAuthProvider();
 
-  // REGISTER
-  window.registerUser = async () => {
-    const email = document.getElementById("email").value;
-    const password = document.getElementById("password").value;
+/* ---------- UTIL ---------- */
+function generateOTP(){
+  return Math.floor(100000 + Math.random() * 900000).toString();
+}
+window.togglePass = ()=>{
+  const p=document.getElementById("password");
+  p.type = p.type==="password" ? "text" : "password";
+};
 
-    if (!email || !password) {
-      alert("Email aur password bharo");
-      return;
-    }
+/* ---------- REGISTER ---------- */
+window.registerUser = async ()=>{
+  const email=email.value;
+  const password=password.value;
+  if(!email || !password){
+    alert("Email & password bharo");
+    return;
+  }
 
-    const userCred = await createUserWithEmailAndPassword(auth, email, password);
-    await sendEmailVerification(userCred.user);
+  const userCred = await createUserWithEmailAndPassword(auth,email,password);
+  await sendEmailVerification(userCred.user);
 
-    alert("Verification email bhej di gayi hai. Inbox / Spam check karo.");
-  };
+  await setDoc(doc(db,"users",userCred.user.uid),{
+    email,
+    otpVerified:false
+  });
 
-  // LOGIN
-  window.loginUser = async () => {
-  const email = document.getElementById("email").value;
-  const password = document.getElementById("password").value;
+  alert("Email verification link bhej di gayi hai. Verify karke login karo.");
+};
 
-  try {
-    const userCred = await signInWithEmailAndPassword(auth, email, password);
+/* ---------- LOGIN ---------- */
+window.loginUser = async ()=>{
+  const email=email.value;
+  const password=password.value;
 
-    // 🔥 MUST
-    await userCred.user.reload();
+  const userCred = await signInWithEmailAndPassword(auth,email,password);
+  await userCred.user.reload();
 
-    if (!userCred.user.emailVerified) {
-      alert("Pehle email verify karo");
-      return;
-    }
+  if(!userCred.user.emailVerified){
+    alert("Pehle email verify karo");
+    return;
+  }
 
-    alert("Login successful");
-    
-  } catch (e) {
-    alert(e.message);
+  // 🔐 OTP GENERATE
+  const otp = generateOTP();
+
+  await updateDoc(doc(db,"users",userCred.user.uid),{
+    otp: otp,
+    otpVerified:false
+  });
+
+  // 📤 YAHAN TUM OTP BHEJOGE (SMS / WhatsApp)
+  console.log("OTP:", otp);
+  alert("OTP bhej diya gaya hai (tumhare system se)");
+
+  document.getElementById("otpBox").classList.remove("hide");
+};
+
+/* ---------- OTP VERIFY ---------- */
+window.verifyOTP = async ()=>{
+  const user = auth.currentUser;
+  const snap = await getDoc(doc(db,"users",user.uid));
+
+  if(!snap.exists()){
+    alert("User record nahi mila");
+    return;
+  }
+
+  if(otpInput.value === snap.data().otp){
+    await updateDoc(doc(db,"users",user.uid),{
+      otpVerified:true
+    });
+    alert("Login Successful 🎉");
+    // yahan dashboard redirect kar sakte ho
+  }else{
+    alert("Wrong OTP ❌");
   }
 };
-  
-  };
+
+/* ---------- GOOGLE LOGIN ---------- */
+window.googleLogin = async ()=>{
+  const res = await signInWithPopup(auth,googleProvider);
+  alert("Google login successful");
+};
+
+/* ---------- FORGOT PASSWORD ---------- */
+window.forgotPassword = async ()=>{
+  if(!email.value){
+    alert("Email bharo");
+    return;
+  }
+  await sendPasswordResetEmail(auth,email.value);
+  alert("Password reset email bhej di gayi hai");
+};
 </script>
-  
-<h2>Wingo 2.0</h2>
 
-<input id="email" type="email" placeholder="Email">
-<input id="password" type="password" placeholder="Password">
-
-<button onclick="registerUser()">Register</button>
-<button onclick="loginUser()">Login</button>
-<button onclick="googleLogin()">Continue with Google</button>
-  
 </body>
 </html>
