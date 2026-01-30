@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wingo 2.0 – Dashboard</title>
+
+<style>
+body{
+  margin:0;
+  font-family: Arial, sans-serif;
+  background:#f6e9ff;
+}
+
+.header{
+  background:#6a4bc4;
+  color:white;
+  padding:20px;
+  border-bottom-left-radius:20px;
+  border-bottom-right-radius:20px;
+}
+
+.header h2{
+  margin:0;
+}
+
+.balance{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  margin-top:10px;
+}
+
+.balance span{
+  background:#7e5ce6;
+  padding:8px 14px;
+  border-radius:20px;
+  font-weight:bold;
+}
+
+.section{
+  padding:15px;
+}
+
+.cards{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:10px;
+  text-align:center;
+}
+
+.card{
+  background:white;
+  padding:12px;
+  border-radius:12px;
+  font-size:13px;
+}
+
+.card img{
+  width:40px;
+  margin-bottom:5px;
+}
+
+.task{
+  background:white;
+  margin-top:15px;
+  padding:15px;
+  border-radius:15px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+}
+
+.task img{
+  width:40px;
+}
+
+.task button{
+  background:#6a4bc4;
+  color:white;
+  border:none;
+  padding:8px 14px;
+  border-radius:20px;
+}
+
+.bottom-nav{
+  position:fixed;
+  bottom:0;
+  left:0;
+  width:100%;
+  background:white;
+  display:flex;
+  justify-content:space-around;
+  padding:10px 0;
+  border-top:1px solid #ddd;
+}
+
+.bottom-nav div{
+  text-align:center;
+  font-size:12px;
+  color:#666;
+}
+
+.active{
+  color:#6a4bc4;
+  font-weight:bold;
+}
+</style>
+</head>
+
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <h2>Hello, <span id="username">Gourav</span></h2>
+  <div class="balance">
+    💰 <span id="coins">165.48</span>
+  </div>
+</div>
+
+<!-- QUICK ACTIONS -->
+<div class="section">
+  <div class="cards">
+    <div class="card">⭐<br>Playtime</div>
+    <div class="card">💰<br>Earn More</div>
+    <div class="card">🎮<br>Play & Earn</div>
+    <div class="card">📋<br>Survey</div>
+  </div>
+
+  <!-- TASK -->
+  <div class="task">
+    <div style="display:flex;align-items:center;gap:10px;">
+      <img src="https://cdn-icons-png.flaticon.com/512/888/888870.png">
+      <div>
+        <b>Insta EMI Card</b><br>
+        Earn ₹165.48
+      </div>
+    </div>
+    <button>Register & Earn</button>
+  </div>
+</div>
+
+<!-- BOTTOM NAV -->
+<div class="bottom-nav">
+  <div class="active">🏠<br>Home</div>
+  <div>🔥<br>Offers</div>
+  <div>👥<br>Refer</div>
+  <div>🏆<br>Contest</div>
+  <div>⚙️<br>Settings</div>
+</div>
+
+</body>
+</html>
+
