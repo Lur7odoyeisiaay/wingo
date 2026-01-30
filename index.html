@@ -6,89 +6,80 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
-import {
-  getAuth,
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-  sendEmailVerification,
-  GoogleAuthProvider,
-  signInWithPopup
-} from "https://www.gstatic.com/firebasejs/12.8.0/firebase-auth.js";
+  // Firebase core
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
 
-const firebaseConfig = {
-  apiKey: "PASTE_YOUR_API_KEY",
-  authDomain: "wingo-20.firebaseapp.com",
-  projectId: "wingo-20"
-};
+  // Firebase Auth
+  import {
+    getAuth,
+    createUserWithEmailAndPassword,
+    signInWithEmailAndPassword,
+    sendEmailVerification,
+    GoogleAuthProvider,
+    signInWithPopup
+  } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-auth.js";
 
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const provider = new GoogleAuthProvider();
+  // Firebase config
+  const firebaseConfig = {
+    apiKey: "AIzaSyDa8ilGRerUgfN6nvoikHJeBGvK9v0bg7Y",
+    authDomain: "wingo-2o.firebaseapp.com",
+    projectId: "wingo-2o",
+    storageBucket: "wingo-2o.appspot.com",
+    messagingSenderId: "883614286753",
+    appId: "1:883614286753:web:20407fa46e2f01b449c1e0"
+  };
 
-// REGISTER
-window.register = async () => {
-  const email = document.getElementById("email").value;
-  const pass = document.getElementById("password").value;
+  // Init
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const googleProvider = new GoogleAuthProvider();
 
-  if (!email || !pass) {
-    alert("Email aur password bhar");
-    return;
-  }
+  // REGISTER
+  window.registerUser = async () => {
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
 
-  try {
-    const userCred = await createUserWithEmailAndPassword(auth, email, pass);
-    await sendEmailVerification(userCred.user);
-    alert("Email verification link bhej diya hai. Inbox / Spam check karo.");
-  } catch (e) {
-    alert(e.message);
-  }
-};
-
-// LOGIN
-window.login = async () => {
-  const email = document.getElementById("email").value;
-  const pass = document.getElementById("password").value;
-
-  try {
-    const userCred = await signInWithEmailAndPassword(auth, email, pass);
-    if (!userCred.user.emailVerified) {
-      alert("Pehle email verify karo");
+    if (!email || !password) {
+      alert("Email aur password bharo");
       return;
     }
+
+    const userCred = await createUserWithEmailAndPassword(auth, email, password);
+    await sendEmailVerification(userCred.user);
+
+    alert("Verification email bhej di gayi hai. Inbox / Spam check karo.");
+  };
+
+  // LOGIN
+  window.loginUser = async () => {
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
+
+    const userCred = await signInWithEmailAndPassword(auth, email, password);
+
+    if (!userCred.user.emailNotVerified) {
+  alert("Pehle email verify karo");
+  return;
+    }
+    
     alert("Login successful");
-  } catch (e) {
-    alert(e.message);
-  }
-};
+  };
 
-// GOOGLE LOGIN
-window.googleLogin = async () => {
-  try {
-    await signInWithPopup(auth, provider);
+  // GOOGLE LOGIN
+  window.googleLogin = async () => {
+    await signInWithPopup(auth, googleProvider);
     alert("Google login successful");
-  } catch (e) {
-    alert(e.message);
-  }
-};
+  };
 </script>
-
-<style>
-body{font-family:Arial;background:#fde7d6;padding:20px;}
-input,button{width:100%;padding:12px;margin:8px 0;}
-button{background:#b37a5c;color:#fff;border:none;}
-</style>
-</head>
-
-<body>
+  
 <h2>Wingo 2.0</h2>
 
 <input id="email" type="email" placeholder="Email">
 <input id="password" type="password" placeholder="Password">
 
-<button onclick="register()">Register</button>
-<button onclick="login()">Login</button>
+<button onclick="registerUser()">Register</button>
+<button onclick="loginUser()">Login</button>
 <button onclick="googleLogin()">Continue with Google</button>
-
+  
 </body>
 </html>
