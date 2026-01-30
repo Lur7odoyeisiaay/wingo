@@ -4,40 +4,52 @@
 <meta charset="UTF-8">
 <title>Wingo – Earn Coins Online</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <style>
-body{
-    margin:0;
-    font-family: Arial, sans-serif;
-    background:#f5f7fb;
+body {
+  font-family: Arial, sans-serif;
+  background:#f4f6fb;
+  margin:0;
+  padding:0;
 }
-header{
-    background:#6c63ff;
-    color:white;
-    padding:15px;
-    text-align:center;
+header {
+  background:#6c63ff;
+  color:white;
+  padding:20px;
+  text-align:center;
 }
-.container{
-    padding:20px;
+.container {
+  max-width:420px;
+  margin:20px auto;
+  padding:10px;
 }
-.card{
-    background:white;
-    padding:15px;
-    border-radius:10px;
-    margin-bottom:15px;
+.card {
+  background:white;
+  padding:15px;
+  border-radius:10px;
+  margin-bottom:15px;
 }
-.btn{
-    display:inline-block;
-    padding:10px 15px;
-    background:#6c63ff;
-    color:white;
-    text-decoration:none;
-    border-radius:5px;
+input {
+  width:100%;
+  padding:10px;
+  margin-bottom:10px;
+  font-size:15px;
 }
-footer{
-    text-align:center;
-    font-size:14px;
-    padding:10px;
-    color:#666;
+.btn {
+  padding:10px 15px;
+  background:#6c63ff;
+  color:white;
+  border:none;
+  border-radius:6px;
+  font-size:15px;
+  cursor:pointer;
+  margin-right:10px;
+}
+footer {
+  text-align:center;
+  font-size:13px;
+  color:#777;
+  padding:10px;
 }
 </style>
 </head>
@@ -45,119 +57,123 @@ footer{
 <body>
 
 <header>
-<h1>Wingo</h1>
-<p>Earn Coins • Complete Tasks • Get Paid</p>
+  <h1>Wingo</h1>
+  <p>Earn Coins • Complete Tasks • Get Paid</p>
 </header>
 
 <div class="container">
 
-<div class="card">
-<h3>💰 Coin System</h3>
-<p>🪙 2 Coins = ₹1</p>
-<p>Minimum Withdrawal: ₹30 (60 Coins)</p>
-</div>
+  <div class="card">
+    <h3>💰 Coin System</h3>
+    <p>2 Coins = ₹1</p>
+    <p>Minimum Withdrawal: ₹30 (60 Coins)</p>
+  </div>
 
-<div class="card">
-<h3>📋 How to Earn?</h3>
-<ul>
-<li>Complete app & website tasks</li>
-<li>Watch videos & surveys</li>
-<li>Earn coins in wallet</li>
-</ul>
-</div>
+  <div class="card">
+    <h3>📝 How to Earn?</h3>
+    <ul>
+      <li>Complete app & website tasks</li>
+      <li>Watch videos & surveys</li>
+      <li>Earn coins in wallet</li>
+    </ul>
+  </div>
 
-<div class="card">
-  <h3>💸 Register / Login</h3>
+  <div class="card">
+    <h3>🔐 Register / Login</h3>
 
-  <input id="email" type="email" placeholder="Enter email"><br><br>
-  <input id="password" type="password" placeholder="Enter password"><br><br>
+    <input type="email" id="email" placeholder="Enter email">
+    <input type="password" id="password" placeholder="Enter password">
 
-  <button class="btn" onclick="registerUser()">Register</button>
-  <button class="btn" onclick="loginUser()">Login</button>
-</div>
+    <button class="btn" onclick="registerUser()">Register</button>
+    <button class="btn" onclick="loginUser()">Login</button>
+  </div>
 
 </div>
 
 <footer>
-<p>Wingo is a reward-based platform. Earnings are not guaranteed.</p>
+  <p>Wingo is a reward-based platform. Earnings are not guaranteed.</p>
 </footer>
+
+<!-- 🔥 FIREBASE CODE -->
 <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
-  import {
-    getAuth,
-    createUserWithEmailAndPassword,
-    signInWithEmailAndPassword,
-    sendEmailVerification
-  } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-auth.js";
-  import {
-    getFirestore,
-    doc,
-    setDoc
-  } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-firestore.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
+import {
+  getAuth,
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  sendEmailVerification
+} from "https://www.gstatic.com/firebasejs/12.8.0/firebase-auth.js";
+import {
+  getFirestore,
+  doc,
+  setDoc
+} from "https://www.gstatic.com/firebasejs/12.8.0/firebase-firestore.js";
 
-  // Import the functions you need from the SDKs you need
-import { initializeApp } from "firebase/app";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
-
-// Your web app's Firebase configuration
+/* 🔴 REAL FIREBASE CONFIG (TUMHARA) */
 const firebaseConfig = {
-  apiKey: "AIzaSyBbNjW7vyOXyG7JVZMVnprD8FUT3nxwGjk",
+  apiKey: "AIzaSyBbNjW7vyOxYG7JVZMvnprD8FUT3nxwGjk",
   authDomain: "wingo-812a6.firebaseapp.com",
   projectId: "wingo-812a6",
-  storageBucket: "wingo-812a6.firebasestorage.app",
+  storageBucket: "wingo-812a6.appspot.com",
   messagingSenderId: "1088530072061",
   appId: "1:1088530072061:web:57d8abbc2439a5eb35d994"
 };
 
-// Initialize Firebase
-  const app = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
-  const db = getFirestore(app);
+/* INIT */
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
 
-  // ✅ REGISTER + EMAIL VERIFICATION
-  window.registerUser = async function () {
-    const email = document.getElementById("email").value;
-    const password = document.getElementById("password").value;
+/* ✅ REGISTER */
+window.registerUser = async () => {
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
 
-    try {
-      const userCred = await createUserWithEmailAndPassword(auth, email, password);
+  if (!email || !password) {
+    alert("Email aur password dono bharo");
+    return;
+  }
 
-      // 🔐 Send verification email
-      await sendEmailVerification(userCred.user);
+  try {
+    const userCred = await createUserWithEmailAndPassword(auth, email, password);
+    await sendEmailVerification(userCred.user);
 
-      // Create user wallet
-      await setDoc(doc(db, "users", userCred.user.uid), {
-        email: email,
-        coins: 0,
-        verified: false,
-        joined: new Date()
-      });
+    await setDoc(doc(db, "users", userCred.user.uid), {
+      email: email,
+      coins: 0,
+      verified: false,
+      createdAt: new Date()
+    });
 
-      alert("Registration successful! Please check your email and verify first.");
-    } catch (e) {
-      alert(e.message);
+    alert("Registration successful! Email verify karo fir login karo.");
+  } catch (e) {
+    alert(e.message);
+  }
+};
+
+/* ✅ LOGIN */
+window.loginUser = async () => {
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
+
+  if (!email || !password) {
+    alert("Email aur password dono bharo");
+    return;
+  }
+
+  try {
+    const userCred = await signInWithEmailAndPassword(auth, email, password);
+
+    if (!userCred.user.emailVerified) {
+      alert("Pehle email verify karo");
+      return;
     }
-  };
 
-  // ✅ LOGIN (BLOCK IF NOT VERIFIED)
-  window.loginUser = async function () {
-    const email = document.getElementById("email").value;
-    const password = document.getElementById("password").value;
-
-    try {
-      const userCred = await signInWithEmailAndPassword(auth, email, password);
-
-      if (!userCred.user.emailVerified) {
-  alert("Please verify your email before login.");
-  return;
-      }
-    
-      alert("Login successful!");
-    } catch (e) {
-      alert(e.message);
-    }
-  };
+    alert("Login successful!");
+  } catch (e) {
+    alert(e.message);
+  }
+};
 </script>
 
 </body>
