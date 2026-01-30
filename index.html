@@ -2,90 +2,77 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Wingo – Earn Coins Online</title>
+<title>Wingo 2.0 – Dashboard</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
-body {
-  font-family: Arial, sans-serif;
-  background:#f4f6fb;
-  margin:0;
-  padding:0;
-}
-header {
-  background:#6c63ff;
-  color:white;
-  padding:20px;
-  text-align:center;
-}
-.container {
-  max-width:420px;
-  margin:20px auto;
-  padding:10px;
-}
-.card {
-  background:white;
-  padding:15px;
-  border-radius:10px;
-  margin-bottom:15px;
-}
-input {
-  width:100%;
-  padding:10px;
-  margin-bottom:10px;
-  font-size:15px;
-}
-.btn {
-  padding:10px 15px;
-  background:#6c63ff;
-  color:white;
-  border:none;
-  border-radius:6px;
-  font-size:15px;
-  cursor:pointer;
-  margin-right:10px;
-}
-footer {
-  text-align:center;
-  font-size:13px;
-  color:#777;
-  padding:10px;
-}
+body{font-family:Arial,sans-serif;background:#f4f6fb;margin:0}
+header{background:#6c63ff;color:#fff;padding:18px;text-align:center}
+.container{max-width:420px;margin:20px auto;padding:10px}
+.card{background:#fff;padding:16px;border-radius:10px;margin-bottom:15px}
+input{width:100%;padding:10px;margin-bottom:10px;font-size:15px}
+.btn{padding:10px 14px;background:#6c63ff;color:#fff;border:none;border-radius:6px;font-size:15px;cursor:pointer;margin-right:6px}
+.btn-outline{background:#fff;color:#6c63ff;border:1px solid #6c63ff}
+.row{display:flex;gap:6px;align-items:center}
+footer{text-align:center;font-size:13px;color:#777;padding:10px}
+.whatsapp{display:inline-flex;align-items:center;gap:8px;background:#25D366;color:#fff;padding:10px 14px;border-radius:999px;text-decoration:none}
+.small{font-size:12px;color:#666}
+.hidden{display:none}
+.badge{background:#eef;padding:6px 10px;border-radius:999px;font-size:13px}
 </style>
 </head>
 
 <body>
 
 <header>
-  <h1>Wingo</h1>
+  <h1>Wingo 2.0</h1>
   <p>Earn Coins • Complete Tasks • Get Paid</p>
 </header>
 
 <div class="container">
 
-  <div class="card">
-    <h3>💰 Coin System</h3>
-    <p>2 Coins = ₹1</p>
-    <p>Minimum Withdrawal: ₹30 (60 Coins)</p>
-  </div>
-
-  <div class="card">
-    <h3>📝 How to Earn?</h3>
-    <ul>
-      <li>Complete app & website tasks</li>
-      <li>Watch videos & surveys</li>
-      <li>Earn coins in wallet</li>
-    </ul>
-  </div>
-
-  <div class="card">
+  <!-- AUTH CARD -->
+  <div class="card" id="authCard">
     <h3>🔐 Register / Login</h3>
 
     <input type="email" id="email" placeholder="Enter email">
-    <input type="password" id="password" placeholder="Enter password">
 
-    <button class="btn" onclick="registerUser()">Register</button>
-    <button class="btn" onclick="loginUser()">Login</button>
+    <div class="row">
+      <input type="password" id="password" placeholder="Enter password" style="flex:1">
+      <button class="btn btn-outline" onclick="togglePwd()">👁️</button>
+    </div>
+
+    <div class="row" style="margin-top:10px">
+      <button class="btn" onclick="registerUser()">Register</button>
+      <button class="btn btn-outline" onclick="loginUser()">Login</button>
+    </div>
+
+    <p class="small">Register ke baad email verify karna zaroori hai.</p>
+  </div>
+
+  <!-- DASHBOARD -->
+  <div class="card hidden" id="dashboard">
+    <h3>👋 Welcome</h3>
+    <p><b>Email:</b> <span id="userEmail"></span></p>
+
+    <div class="row">
+      <span class="badge">🪙 Coins: <b id="coinCount">0</b></span>
+      <span class="badge">₹ <b id="rupeeValue">0</b></span>
+    </div>
+
+    <div class="row" style="margin-top:12px">
+      <button class="btn-outline btn" onclick="logoutUser()">Logout</button>
+    </div>
+  </div>
+
+  <!-- SUPPORT -->
+  <div class="card">
+    <h3>💬 Support</h3>
+    <p>Login, task ya payment me problem?</p>
+    <a class="whatsapp" href="https://wa.me/919999999999" target="_blank">
+      WhatsApp Support
+    </a>
+    <p class="small">Number baad me change kar sakte ho.</p>
   </div>
 
 </div>
@@ -94,22 +81,25 @@ footer {
   <p>Wingo is a reward-based platform. Earnings are not guaranteed.</p>
 </footer>
 
-<!-- 🔥 FIREBASE CODE -->
+<!-- 🔥 FIREBASE -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
 import {
   getAuth,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
-  sendEmailVerification
+  sendEmailVerification,
+  onAuthStateChanged,
+  signOut
 } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-auth.js";
 import {
   getFirestore,
   doc,
-  setDoc
+  setDoc,
+  getDoc
 } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-firestore.js";
 
-/* 🔴 REAL FIREBASE CONFIG (TUMHARA) */
+/* 🔴 FIREBASE CONFIG */
 const firebaseConfig = {
   apiKey: "AIzaSyBbNjW7vyOxYG7JVZMvnprD8FUT3nxwGjk",
   authDomain: "wingo-812a6.firebaseapp.com",
@@ -119,61 +109,72 @@ const firebaseConfig = {
   appId: "1:1088530072061:web:57d8abbc2439a5eb35d994"
 };
 
-/* INIT */
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-/* ✅ REGISTER */
+/* ELEMENT HELPERS */
+const emailEl = () => document.getElementById("email");
+const pwdEl = () => document.getElementById("password");
+
+/* SHOW/HIDE PASSWORD */
+window.togglePwd = () => {
+  const p = pwdEl();
+  p.type = p.type === "password" ? "text" : "password";
+};
+
+/* REGISTER */
 window.registerUser = async () => {
-  const email = document.getElementById("email").value;
-  const password = document.getElementById("password").value;
+  const email = emailEl().value;
+  const password = pwdEl().value;
+  if(!email || !password){ alert("Email aur password bharo"); return; }
 
-  if (!email || !password) {
-    alert("Email aur password dono bharo");
-    return;
-  }
-
-  try {
-    const userCred = await createUserWithEmailAndPassword(auth, email, password);
-    await sendEmailVerification(userCred.user);
-
-    await setDoc(doc(db, "users", userCred.user.uid), {
-      email: email,
-      coins: 0,
-      verified: false,
-      createdAt: new Date()
+  try{
+    const uc = await createUserWithEmailAndPassword(auth,email,password);
+    await sendEmailVerification(uc.user);
+    await setDoc(doc(db,"users",uc.user.uid),{
+      email, coins:0, verified:false, createdAt:new Date()
     });
-
-    alert("Registration successful! Email verify karo fir login karo.");
-  } catch (e) {
-    alert(e.message);
-  }
+    alert("Registration successful! Email verify karke login karo.");
+  }catch(e){ alert(e.message); }
 };
 
-/* ✅ LOGIN */
+/* LOGIN */
 window.loginUser = async () => {
-  const email = document.getElementById("email").value;
-  const password = document.getElementById("password").value;
+  const email = emailEl().value;
+  const password = pwdEl().value;
+  if(!email || !password){ alert("Email aur password bharo"); return; }
 
-  if (!email || !password) {
-    alert("Email aur password dono bharo");
-    return;
-  }
-
-  try {
-    const userCred = await signInWithEmailAndPassword(auth, email, password);
-
-    if (!userCred.user.emailVerified) {
-      alert("Pehle email verify karo");
-      return;
-    }
-
-    alert("Login successful!");
-  } catch (e) {
-    alert(e.message);
-  }
+  try{
+    const uc = await signInWithEmailAndPassword(auth,email,password);
+    if(!uc.user.emailVerified){ alert("Pehle email verify karo"); return; }
+  }catch(e){ alert(e.message); }
 };
+
+/* LOGOUT */
+window.logoutUser = async () => {
+  await signOut(auth);
+};
+
+/* AUTH STATE -> SHOW DASHBOARD */
+onAuthStateChanged(auth, async (user)=>{
+  const authCard = document.getElementById("authCard");
+  const dash = document.getElementById("dashboard");
+
+  if(user && user.emailVerified){
+    authCard.classList.add("hidden");
+    dash.classList.remove("hidden");
+    document.getElementById("userEmail").innerText = user.email;
+
+    const snap = await getDoc(doc(db,"users",user.uid));
+    const coins = snap.exists() ? (snap.data().coins || 0) : 0;
+    document.getElementById("coinCount").innerText = coins;
+    document.getElementById("rupeeValue").innerText = (coins/2).toFixed(0);
+  }else{
+    dash.classList.add("hidden");
+    authCard.classList.remove("hidden");
+  }
+});
 </script>
 
 </body>
