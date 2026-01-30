@@ -52,23 +52,27 @@
 
   // LOGIN
   window.loginUser = async () => {
-    const email = document.getElementById("email").value;
-    const password = document.getElementById("password").value;
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
 
+  try {
     const userCred = await signInWithEmailAndPassword(auth, email, password);
 
-    if (!userCred.user.emailNotVerified) {
-  alert("Pehle email verify karo");
-  return;
-    }
-    
-    alert("Login successful");
-  };
+    // 🔥 MUST
+    await userCred.user.reload();
 
-  // GOOGLE LOGIN
-  window.googleLogin = async () => {
-    await signInWithPopup(auth, googleProvider);
-    alert("Google login successful");
+    if (!userCred.user.emailVerified) {
+      alert("Pehle email verify karo");
+      return;
+    }
+
+    alert("Login successful");
+    
+  } catch (e) {
+    alert(e.message);
+  }
+};
+  
   };
 </script>
   
