@@ -83,99 +83,71 @@ footer{text-align:center;font-size:13px;color:#777;padding:10px}
 
 <!-- 🔥 FIREBASE -->
 <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
-import {
-  getAuth,
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-  sendEmailVerification,
-  onAuthStateChanged,
-  signOut
-} from "https://www.gstatic.com/firebasejs/12.8.0/firebase-auth.js";
-import {
-  getFirestore,
-  doc,
-  setDoc,
-  getDoc
-} from "https://www.gstatic.com/firebasejs/12.8.0/firebase-firestore.js";
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
+  import {
+    getAuth,
+    createUserWithEmailAndPassword,
+    signInWithEmailAndPassword,
+    sendEmailVerification
+  } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-auth.js";
+  import {
+    getFirestore,
+    doc,
+    setDoc
+  } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-firestore.js";
 
-/* 🔴 FIREBASE CONFIG */
-const firebaseConfig = {
-  apiKey: "AIzaSyBbNjW7vyOxYG7JVZMvnprD8FUT3nxwGjk",
-  authDomain: "wingo-812a6.firebaseapp.com",
-  projectId: "wingo-812a6",
-  storageBucket: "wingo-812a6.appspot.com",
-  messagingSenderId: "1088530072061",
-  appId: "1:1088530072061:web:57d8abbc2439a5eb35d994"
-};
+  // 🔥 WINGO 2.0 FIREBASE CONFIG
+  const firebaseConfig = {
+    apiKey: "AIzaSyDa8ilGRerUgfN6nvoikHJeBGvK9v0bg7Y",
+    authDomain: "wingo-2o.firebaseapp.com",
+    projectId: "wingo-2o",
+    storageBucket: "wingo-2o.firebasestorage.app",
+    messagingSenderId: "883614286753",
+    appId: "1:883614286753:web:20407fa46e2f01b449c1e0"
+  };
 
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
+  // INIT
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
 
-/* ELEMENT HELPERS */
-const emailEl = () => document.getElementById("email");
-const pwdEl = () => document.getElementById("password");
+  // REGISTER
+  window.registerUser = async () => {
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
 
-/* SHOW/HIDE PASSWORD */
-window.togglePwd = () => {
-  const p = pwdEl();
-  p.type = p.type === "password" ? "text" : "password";
-};
+    if (!email || !password) {
+      alert("Email aur password bharo");
+      return;
+    }
 
-/* REGISTER */
-window.registerUser = async () => {
-  const email = emailEl().value;
-  const password = pwdEl().value;
-  if(!email || !password){ alert("Email aur password bharo"); return; }
+    const userCred = await createUserWithEmailAndPassword(auth, email, password);
+    await sendEmailVerification(userCred.user);
 
-  try{
-    const uc = await createUserWithEmailAndPassword(auth,email,password);
-    await sendEmailVerification(uc.user);
-    await setDoc(doc(db,"users",uc.user.uid),{
-      email, coins:0, verified:false, createdAt:new Date()
+    await setDoc(doc(db, "users", userCred.user.uid), {
+      email: email,
+      coins: 0,
+      createdAt: new Date()
     });
-    alert("Registration successful! Email verify karke login karo.");
-  }catch(e){ alert(e.message); }
-};
 
-/* LOGIN */
-window.loginUser = async () => {
-  const email = emailEl().value;
-  const password = pwdEl().value;
-  if(!email || !password){ alert("Email aur password bharo"); return; }
+    alert("Register ho gaya. Email verify karo.");
+  };
 
-  try{
-    const uc = await signInWithEmailAndPassword(auth,email,password);
-    if(!uc.user.emailVerified){ alert("Pehle email verify karo"); return; }
-  }catch(e){ alert(e.message); }
-};
+  // LOGIN
+  window.loginUser = async () => {
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
 
-/* LOGOUT */
-window.logoutUser = async () => {
-  await signOut(auth);
-};
+    const userCred = await signInWithEmailAndPassword(auth, email, password);
 
-/* AUTH STATE -> SHOW DASHBOARD */
-onAuthStateChanged(auth, async (user)=>{
-  const authCard = document.getElementById("authCard");
-  const dash = document.getElementById("dashboard");
+    if (!userCred.user.emailVerified) {
+      alert("Pehle email verify karo");
+      return;
+    }
 
-  if(user && user.emailVerified){
-    authCard.classList.add("hidden");
-    dash.classList.remove("hidden");
-    document.getElementById("userEmail").innerText = user.email;
-
-    const snap = await getDoc(doc(db,"users",user.uid));
-    const coins = snap.exists() ? (snap.data().coins || 0) : 0;
-    document.getElementById("coinCount").innerText = coins;
-    document.getElementById("rupeeValue").innerText = (coins/2).toFixed(0);
-  }else{
-    dash.classList.add("hidden");
-    authCard.classList.remove("hidden");
-  }
-});
+    alert("Login successful");
+  };
 </script>
-
+  
 </body>
 </html>
