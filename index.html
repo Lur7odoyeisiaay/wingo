@@ -1,26 +1,12 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Wingo 2.0 Login</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-</head>
-<body>
-
-<h2>Wingo 2.0 – Login / Register</h2>
-
-<input id="email" type="email" placeholder="Email"><br><br>
-
-<input id="password" type="password" placeholder="Password">
-<button onclick="toggle()">👁</button><br><br>
-
-<button onclick="register()">Register</button>
-<button onclick="login()">Login</button>
-<br><br>
-
-<button onclick="googleLogin()">Login with Google</button>
+<meta charset="UTF-8">
+<title>Wingo 2.0 Login</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
 
 <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
 import {
   getAuth,
   createUserWithEmailAndPassword,
@@ -28,47 +14,81 @@ import {
   sendEmailVerification,
   GoogleAuthProvider,
   signInWithPopup
-} from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+} from "https://www.gstatic.com/firebasejs/12.8.0/firebase-auth.js";
 
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "wingo-2o.firebaseapp.com",
-  projectId: "wingo-2o",
+  apiKey: "PASTE_YOUR_API_KEY",
+  authDomain: "wingo-20.firebaseapp.com",
+  projectId: "wingo-20"
 };
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
+const provider = new GoogleAuthProvider();
 
-window.toggle = () => {
-  const p = document.getElementById("password");
-  p.type = p.type === "password" ? "text" : "password";
-};
-
+// REGISTER
 window.register = async () => {
-  const email = email.value;
-  const pass = password.value;
-  const user = await createUserWithEmailAndPassword(auth, email, pass);
-  await sendEmailVerification(user.user);
-  alert("Email verify karo, mail bhej di hai");
-};
+  const email = document.getElementById("email").value;
+  const pass = document.getElementById("password").value;
 
-window.login = async () => {
-  const email = email.value;
-  const pass = password.value;
-  const user = await signInWithEmailAndPassword(auth, email, pass);
-  if (!user.user.emailVerified) {
-    alert("Pehle email verify karo");
+  if (!email || !pass) {
+    alert("Email aur password bhar");
     return;
   }
-  alert("Login success");
+
+  try {
+    const userCred = await createUserWithEmailAndPassword(auth, email, pass);
+    await sendEmailVerification(userCred.user);
+    alert("Email verification link bhej diya hai. Inbox / Spam check karo.");
+  } catch (e) {
+    alert(e.message);
+  }
 };
 
+// LOGIN
+window.login = async () => {
+  const email = document.getElementById("email").value;
+  const pass = document.getElementById("password").value;
+
+  try {
+    const userCred = await signInWithEmailAndPassword(auth, email, pass);
+    if (!userCred.user.emailVerified) {
+      alert("Pehle email verify karo");
+      return;
+    }
+    alert("Login successful");
+  } catch (e) {
+    alert(e.message);
+  }
+};
+
+// GOOGLE LOGIN
 window.googleLogin = async () => {
-  const provider = new GoogleAuthProvider();
-  await signInWithPopup(auth, provider);
-  alert("Google login success");
+  try {
+    await signInWithPopup(auth, provider);
+    alert("Google login successful");
+  } catch (e) {
+    alert(e.message);
+  }
 };
 </script>
+
+<style>
+body{font-family:Arial;background:#fde7d6;padding:20px;}
+input,button{width:100%;padding:12px;margin:8px 0;}
+button{background:#b37a5c;color:#fff;border:none;}
+</style>
+</head>
+
+<body>
+<h2>Wingo 2.0</h2>
+
+<input id="email" type="email" placeholder="Email">
+<input id="password" type="password" placeholder="Password">
+
+<button onclick="register()">Register</button>
+<button onclick="login()">Login</button>
+<button onclick="googleLogin()">Continue with Google</button>
 
 </body>
 </html>
