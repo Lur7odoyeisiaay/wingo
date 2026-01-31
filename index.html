@@ -1,216 +1,370 @@
-<!DOCTYPE html>
+FIREBASE_API_KEY=your_api_key
+FIREBASE_AUTH_DOMAIN=your_project.firebaseapp.com
+FIREBASE_PROJECT_ID=your_project_id
+FIREBASE_STORAGE_BUCKET=your_project.appspot.com
+FIREBASE_MESSAGING_SENDER_ID=your_sender_id
+FIREBASE_APP_ID=your_app_id
+{
+  "name": "lab-tech-exam-prep",
+  "version": "1.0.0",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "dotenv": "^16.0.3",
+    "firebase": "^9.17.1"
+  }
+}const express = require('express');
+const path = require('path');
+require('dotenv').config(); // Load Firebase config from .env
+
+const app = express();
+const PORT = process.env.PORT || 3000;
+
+// Serve static files from 'public' directory
+app.use(express.static(path.join(__dirname, 'public')));
+
+// Route for root (home page)
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
+// Future: Add API routes for payments/subscriptions here (e.g., /api/subscribe)
+
+app.listen(PORT, () => {
+  console.log(`Server running on http://localhost:${PORT}`);
+});<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Wingo 2.0 Login</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-
-<style>
-body{
-  margin:0;
-  height:100vh;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  background:#f4efe9;
-  font-family:Arial;
-}
-.box{
-  background:#fff;
-  width:100%;
-  max-width:360px;
-  padding:20px;
-  border-radius:10px;
-  text-align:center;
-  box-shadow:0 10px 25px rgba(0,0,0,.1);
-}
-input{
-  width:100%;
-  padding:10px;
-  margin:8px 0;
-}
-button{
-  width:100%;
-  padding:10px;
-  margin-top:8px;
-  cursor:pointer;
-}
-.google{
-  background:#4285f4;
-  color:#fff;
-  border:none;
-}
-.link{
-  color:#007bff;
-  cursor:pointer;
-  font-size:14px;
-}
-.password-box{
-  position:relative;
-}
-.password-box span{
-  position:absolute;
-  right:10px;
-  top:12px;
-  cursor:pointer;
-}
-.hide{display:none}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Prepare for MP Group 5 Lab Technician Govt Exam with free notes, syllabus, and PDFs in Hindi and English.">
+  <title>Lab Technician Exam Prep</title>
+  <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
-
-<div class="box">
-  <h2>Wingo 2.0</h2>
-
-  <input id="email" placeholder="Email">
-
-  <div class="password-box">
-    <input id="password" type="password" placeholder="Password">
-    <span onclick="togglePass()">👁</span>
+  <header>
+    <nav>
+      <h1>Lab Technician Govt Exam Prep</h1>
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="syllabus.html">Syllabus</a></li>
+        <li><a href="notes.html">Notes</a></li>
+        <li><a href="pdf.html">PDFs</a></li>
+        <li><a href="contact.html">Contact</a></li>
+      </ul>
+    </nav>
+  </header>
+  <main>
+    <section id="intro">
+      <h2>Welcome to Lab Technician Exam Preparation</h2>
+      <p>यह वेबसाइट MP Group 5 Lab Technician Govt Exam की तैयारी के लिए है। यहां आप syllabus, notes, और free PDFs पाएंगे। Content Hindi और English में mixed है, simple language में।</p>
+      <p>Prepare for your government exam with our resources. Start with the syllabus!</p>
+    </section>
+  </main>
+  <footer>
+    <p>&copy; 2023 Lab Tech Prep. All rights reserved.</p>
+  </footer>
+  <script src="script.js"></script>
+</body>
+</html><!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="MP Group 5 Lab Technician syllabus with subject-wise topics.">
+  <title>Syllabus - Lab Technician Exam Prep</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <nav>
+      <h1>Lab Technician Govt Exam Prep</h1>
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="syllabus.html">Syllabus</a></li>
+        <li><a href="notes.html">Notes</a></li>
+        <li><a href="pdf.html">PDFs</a></li>
+        <li><a href="contact.html">Contact</a></li>
+      </ul>
+    </nav>
+  </header>
+  <main>
+    <h2>MP Group 5 Lab Technician Syllabus</h2>
+    <div id="syllabus-list">
+      <!-- Syllabus loaded from Firestore -->
+    </div>
+  </main>
+  <footer>
+    <p>&copy; 2023 Lab Tech Prep. All rights reserved.</p>
+  </footer>
+  <script src="script.js"></script>
+</body>
+</html><!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Topic-wise notes for Lab Technician exam in Hindi and English.">
+  <title>Notes - Lab Technician Exam Prep</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <nav>
+      <h1>Lab Technician Govt Exam Prep</h1>
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="syllabus.html">Syllabus</a></li>
+        <li><a href="notes.html">Notes</a></li>
+        <li><a href="pdf.html">PDFs</a></li>
+        <li><a href="contact.html">Contact</a></li>
+      </ul>
+    </nav>
+  </header>
+  <main>
+    <h2>Topic-wise Notes</h2>
+    <div id="notes-list">
+      <!-- Notes loaded from Firestore -->
+    </div>
+  </main>
+  <footer>
+    <p>&copy; 2023 Lab Tech Prep. All rights reserved.</p>
+  </footer>
+  <script src="script.js"></script>
+</body>
+</html><!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Free PDF downloads for Lab Technician exam preparation.">
+  <title>PDFs - Lab Technician Exam Prep</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <nav>
+      <h1>Lab Technician Govt Exam Prep</h1>
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="syllabus.html">Syllabus</a></li>
+        <li><a href="notes.html">Notes</a></li>
+        <li><a href="pdf.html">PDFs</a></li>
+        <li><a href="contact.html">Contact</a></li>
+      </ul>
+    </nav>
+  </header>
+  <main>
+    <h2>Free PDF Downloads</h2>
+    <div id="pdf-list">
+      <!-- PDFs loaded from Firestore -->
+    </div>
+    <!-- Future: Paid PDFs section -->
+  </main>
+  <footer>
+    <p>&copy; 2023 Lab Tech Prep. All rights reserved.</p>
+  </footer>
+  <script src="script.js"></script>
+</body>
+</html><!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Contact us for Lab Technician exam prep queries.">
+  <title>Contact - Lab Technician Exam Prep</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <nav>
+      <h1>Lab Technician Govt Exam Prep</h1>
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="syllabus.html">Syllabus</a></li>
+        <li><a href="notes.html">Notes</a></li>
+        <li><a href="pdf.html">PDFs</a></li>
+        <li><a href="contact.html">Contact</a></li>
+      </ul>
+    </nav>
+  </header>
+  <main>
+    <h2>Contact Us</h2>
+    <form id="contact-form">
+      <label for="name">Name:</label>
+      <input type="text" id="name" required>
+      <label for="email">Email:</label>
+      <input type="email" id="email" required>
+      <label for="message">Message:</label>
+      <textarea id="message" required></textarea>
+      <button type="submit">Send</button>
+    </form>
+    <p>Email: support@labtechprep.com | Phone: +91-1234567890</p>
+  </main>
+  <footer>
+    <p>&copy; 2023 Lab Tech Prep. All rights reserved.</p>
+  </footer>
+  <script src="script.js"></script>
+</body>
+</html><!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Admin panel for managing exam prep content.">
+  <title>Admin - Lab Technician Exam Prep</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <h1>Admin Panel</h1>
+    <button id="logout">Logout</button>
+  </header>
+  <main id="admin-content" style="display: none;">
+    <h2>Dashboard</h2>
+    <section id="manage-topics">
+      <h3>Manage Topics</h3>
+      <form id="topic-form">
+        <input type="text" id="topic-name" placeholder="Topic Name" required>
+        <button type="submit">Add Topic</button>
+      </form>
+      <ul id="topic-list"></ul>
+    </section>
+    <section id="manage-notes">
+      <h3>Manage Notes</h3>
+      <form id="note-form">
+        <select id="note-topic"></select>
+        <textarea id="note-content" placeholder="Note Content (Hindi+English)" required></textarea>
+        <button type="submit">Add Note</button>
+      </form>
+      <ul id="note-list"></ul>
+    </section>
+    <section id="manage-pdfs">
+      <h3>Manage PDFs</h3>
+      <form id="pdf-form">
+        <input type="text" id="pdf-title" placeholder="PDF Title" required>
+        <input type="file" id="pdf-file" accept=".pdf" required>
+        <button type="submit">Upload PDF</button>
+      </form>
+      <ul id="pdf-list-admin"></ul>
+    </section>
+    <!-- Future: Payment/subscription management -->
+  </main>
+  <div id="login-form">
+    <h2>Admin Login</h2>
+    <input type="email" id="admin-email" placeholder="Email">
+    <input type="password" id="admin-password" placeholder="Password">
+    <button id="login-btn">Login</button>
   </div>
+  <script src="admin.js"></script>
+</body>
+</html>/* Global styles */
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  line-height: 1.6;
+  color: #333;
+  background-color: #f4f4f4;
+}
 
-  <button onclick="registerUser()">Register</button>
-  <button onclick="loginUser()">Login</button>
+header {
+  background: #007bff;
+  color: white;
+  padding: 1rem;
+  text-align: center;
+}
 
-  <button class="google" onclick="googleLogin()">Continue with Google</button>
+nav ul {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+}
 
-  <p class="link" onclick="forgotPassword()">Forgot Password?</p>
+nav a {
+  color: white;
+  text-decoration: none;
+}
 
-  <!-- OTP SECTION -->
-  <div id="otpBox" class="hide">
-    <input id="otpInput" placeholder="Enter OTP">
-    <button onclick="verifyOTP()">Verify OTP</button>
-  </div>
-</div>
+main {
+  max-width: 1200px;
+  margin: 2rem auto;
+  padding: 1rem;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
 
-<script type="module">
-/* ---------- FIREBASE IMPORTS ---------- */
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
-import {
-  getAuth,
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-  sendEmailVerification,
-  sendPasswordResetEmail,
-  GoogleAuthProvider,
-  signInWithPopup
-} from "https://www.gstatic.com/firebasejs/12.8.0/firebase-auth.js";
+footer {
+  text-align: center;
+  padding: 1rem;
+  background: #007bff;
+  color: white;
+}
 
-import {
-  getFirestore,
-  doc,
-  setDoc,
-  getDoc,
-  updateDoc
-} from "https://www.gstatic.com/firebasejs/12.8.0/firebase-firestore.js";
+/* Responsive design */
+@media (max-width: 768px) {
+  nav ul {
+    flex-direction: column;
+  }
+  main {
+    margin: 1rem;
+  }
+}
 
-/* ---------- CONFIG (APNA HI REHNE DO) ---------- */
+/* Forms */
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+button {
+  background: #28a745;
+  color: white;
+  border: none;
+  padding: 0.5rem;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #218838;
+}
+
+/* Lists */
+ul {
+  list-style: none;
+  padding: 0;
+}
+
+li {
+  padding: 0.5rem;
+  border-bottom: 1px solid #ddd;
+}// Import Firebase (assuming CDN or bundled; add <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app.js"></script> etc. in HTML)
+import { initializeApp } from 'firebase/app';
+import { getFirestore, collection, getDocs } from 'firebase/firestore';
+import { getStorage, ref, getDownloadURL } from 'firebase/storage';
+
+// Firebase config (load from .env or embed securely)
 const firebaseConfig = {
-  apiKey: "PASTE_YOUR_API_KEY",
-  authDomain: "YOUR_PROJECT.firebaseapp.com",
-  projectId: "YOUR_PROJECT"
+  apiKey: process.env.FIREBASE_API_KEY,
+  authDomain: process.env.FIREBASE_AUTH_DOMAIN,
+  projectId: process.env.FIREBASE_PROJECT_ID,
+  storageBucket: process.env.FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.FIREBASE_APP_ID
 };
 
 const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
 const db = getFirestore(app);
-const googleProvider = new GoogleAuthProvider();
+const storage = getStorage(app);
 
-/* ---------- UTIL ---------- */
-function generateOTP(){
-  return Math.floor(100000 + Math.random() * 900000).toString();
-}
-window.togglePass = ()=>{
-  const p=document.getElementById("password");
-  p.type = p.type==="password" ? "text" : "password";
-};
-
-/* ---------- REGISTER ---------- */
-window.registerUser = async ()=>{
-  const email=email.value;
-  const password=password.value;
-  if(!email || !password){
-    alert("Email & password bharo");
-    return;
-  }
-
-  const userCred = await createUserWithEmailAndPassword(auth,email,password);
-  await sendEmailVerification(userCred.user);
-
-  await setDoc(doc(db,"users",userCred.user.uid),{
-    email,
-    otpVerified:false
-  });
-
-  alert("Email verification link bhej di gayi hai. Verify karke login karo.");
-};
-
-/* ---------- LOGIN ---------- */
-window.loginUser = async ()=>{
-  const email=email.value;
-  const password=password.value;
-
-  const userCred = await signInWithEmailAndPassword(auth,email,password);
-  await userCred.user.reload();
-
-  if(!userCred.user.emailVerified){
-    alert("Pehle email verify karo");
-    return;
-  }
-
-  // 🔐 OTP GENERATE
-  const otp = generateOTP();
-
-  await updateDoc(doc(db,"users",userCred.user.uid),{
-    otp: otp,
-    otpVerified:false
-  });
-
-  // 📤 YAHAN TUM OTP BHEJOGE (SMS / WhatsApp)
-  console.log("OTP:", otp);
-  alert("OTP bhej diya gaya hai (tumhare system se)");
-
-  document.getElementById("otpBox").classList.remove("hide");
-};
-
-/* ---------- OTP VERIFY ---------- */
-window.verifyOTP = async ()=>{
-  const user = auth.currentUser;
-  const snap = await getDoc(doc(db,"users",user.uid));
-
-  if(!snap.exists()){
-    alert("User record nahi mila");
-    return;
-  }
-
-  if(otpInput.value === snap.data().otp){
-    await updateDoc(doc(db,"users",user.uid),{
-      otpVerified:true
-    });
-    alert("Login Successful 🎉");
-    // yahan dashboard redirect kar sakte ho
-  }else{
-    alert("Wrong OTP ❌");
-  }
-};
-
-/* ---------- GOOGLE LOGIN ---------- */
-window.googleLogin = async ()=>{
-  const res = await signInWithPopup(auth,googleProvider);
-  alert("Google login successful");
-};
-
-/* ---------- FORGOT PASSWORD ---------- */
-window.forgotPassword = async ()=>{
-  if(!email.value){
-    alert("Email bharo");
-    return;
-  }
-  await sendPasswordResetEmail(auth,email.value);
-  alert("Password reset email bhej di gayi hai");
-};
-</script>
-
-</body>
-</html>
+// Load syllabus on syllabus.html
+if (window.location.pathname.includes('syllabus.html')) {
+  const syllabusList = document.getElementById('syllabus-list');
+  get
